@@ -1,0 +1,201 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Source Files\core">
+      <UniqueIdentifier>{044b8ee4-dc48-4af0-b3c4-1015f36c8f40}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\audio">
+      <UniqueIdentifier>{ad05eb9b-3b54-47d5-9b8c-8b8675ba9896}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\game objects">
+      <UniqueIdentifier>{36894418-48c6-4672-aad2-eb6bfdfd4729}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\core">
+      <UniqueIdentifier>{758f0503-44e1-4700-8961-0962dfc661d7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\audio">
+      <UniqueIdentifier>{61bdb22b-cb50-427f-9897-62939ea2e423}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\game objects">
+      <UniqueIdentifier>{e85149fd-8842-4fb6-bfa4-4139d826ccce}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\base classes">
+      <UniqueIdentifier>{3ecee837-a5dc-4ec8-8631-4ad71fa30e23}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\base classes">
+      <UniqueIdentifier>{5005c310-025d-4d0f-bbcb-7b2fb4677305}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\audio">
+      <UniqueIdentifier>{c3e65b39-6d6a-49ab-90a4-99adb3d6c6ba}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\images">
+      <UniqueIdentifier>{ff1e2495-3a61-4f69-abbd-8e277c8d1210}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\fonts">
+      <UniqueIdentifier>{cba1b85a-dcd3-421b-b9d3-37594f4a2980}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\theme">
+      <UniqueIdentifier>{fc49f6ff-ea6f-4385-9a2e-6cce7b3e132b}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\Game.cpp">
+      <Filter>Source Files\core</Filter>
+    </ClCompile>
+    <ClCompile Include="src\main.cpp">
+      <Filter>Source Files\core</Filter>
+    </ClCompile>
+    <ClCompile Include="src\SoundFileCache.cpp">
+      <Filter>Source Files\audio</Filter>
+    </ClCompile>
+    <ClCompile Include="src\GameObject.cpp">
+      <Filter>Source Files\base classes</Filter>
+    </ClCompile>
+    <ClCompile Include="src\GameSprite.cpp">
+      <Filter>Source Files\base classes</Filter>
+    </ClCompile>
+    <ClCompile Include="src\GameText.cpp">
+      <Filter>Source Files\base classes</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ObjectManager.cpp">
+      <Filter>Source Files\core</Filter>
+    </ClCompile>
+    <ClCompile Include="src\GameOver.cpp">
+      <Filter>Source Files\game objects</Filter>
+    </ClCompile>
+    <ClCompile Include="src\GetReady.cpp">
+      <Filter>Source Files\game objects</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Asteroid.cpp">
+      <Filter>Source Files\game objects</Filter>
+    </ClCompile>
+    <ClCompile Include="src\LaserPulse.cpp">
+      <Filter>Source Files\game objects</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Ship.cpp">
+      <Filter>Source Files\game objects</Filter>
+    </ClCompile>
+    <ClCompile Include="src\SFMLAudio.cpp">
+      <Filter>Source Files\audio</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="src\Game.h">
+      <Filter>Header Files\core</Filter>
+    </ClInclude>
+    <ClInclude Include="src\pch.h">
+      <Filter>Header Files\core</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SoundFileCache.h">
+      <Filter>Header Files\audio</Filter>
+    </ClInclude>
+    <ClInclude Include="src\GameObject.h">
+      <Filter>Header Files\base classes</Filter>
+    </ClInclude>
+    <ClInclude Include="src\GameSprite.h">
+      <Filter>Header Files\base classes</Filter>
+    </ClInclude>
+    <ClInclude Include="src\GameText.h">
+      <Filter>Header Files\base classes</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ObjectManager.h">
+      <Filter>Header Files\core</Filter>
+    </ClInclude>
+    <ClInclude Include="src\GameOver.h">
+      <Filter>Header Files\game objects</Filter>
+    </ClInclude>
+    <ClInclude Include="src\GetReady.h">
+      <Filter>Header Files\game objects</Filter>
+    </ClInclude>
+    <ClInclude Include="src\GameEntity.h">
+      <Filter>Header Files\base classes</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Asteroid.h">
+      <Filter>Header Files\game objects</Filter>
+    </ClInclude>
+    <ClInclude Include="src\LaserPulse.h">
+      <Filter>Header Files\game objects</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Ship.h">
+      <Filter>Header Files\game objects</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SFMLAudio.h">
+      <Filter>Header Files\audio</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="images\laserpulse.png">
+      <Filter>Resource Files\images</Filter>
+    </Image>
+    <Image Include="images\menuscreen.png">
+      <Filter>Resource Files\images</Filter>
+    </Image>
+    <Image Include="images\ship.png">
+      <Filter>Resource Files\images</Filter>
+    </Image>
+    <Image Include="images\splashscreen.png">
+      <Filter>Resource Files\images</Filter>
+    </Image>
+    <Image Include="images\splashscreen.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="theme\black.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <Media Include="audio\bangLarge.wav">
+      <Filter>Resource Files\audio</Filter>
+    </Media>
+    <Media Include="audio\bangMedium.wav">
+      <Filter>Resource Files\audio</Filter>
+    </Media>
+    <Media Include="audio\bangSmall.wav">
+      <Filter>Resource Files\audio</Filter>
+    </Media>
+    <Media Include="audio\beat1.wav">
+      <Filter>Resource Files\audio</Filter>
+    </Media>
+    <Media Include="audio\beat2.wav">
+      <Filter>Resource Files\audio</Filter>
+    </Media>
+    <Media Include="audio\extraShip.wav">
+      <Filter>Resource Files\audio</Filter>
+    </Media>
+    <Media Include="audio\fire.wav">
+      <Filter>Resource Files\audio</Filter>
+    </Media>
+    <Media Include="audio\saucerBig.wav">
+      <Filter>Resource Files\audio</Filter>
+    </Media>
+    <Media Include="audio\saucerSmall.wav">
+      <Filter>Resource Files\audio</Filter>
+    </Media>
+    <Media Include="audio\thrust.wav">
+      <Filter>Resource Files\audio</Filter>
+    </Media>
+  </ItemGroup>
+  <ItemGroup>
+    <Font Include="fonts\OCR.TTF">
+      <Filter>Resource Files\fonts</Filter>
+    </Font>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="audio\solveThePuzzle.ogg">
+      <Filter>Resource Files\audio</Filter>
+    </None>
+    <None Include="theme\black.gui" />
+  </ItemGroup>
+</Project>
