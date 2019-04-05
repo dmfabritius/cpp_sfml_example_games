@@ -2,34 +2,37 @@
 #include "Game.h"
 
 Game::Game() {
-    window.create(sf::VideoMode(DISPLAY_WIDTH, DISPLAY_HEIGHT), "T*tris! SFML v2.5.1 TGUI v0.8");
+    window.create(sf::VideoMode(DISPLAY_WIDTH, DISPLAY_HEIGHT), "T*tris! SFML v2.5.1");
 
-    backgroundTexture.loadFromFile("images/bkg.png");
-    backgroundSprite.setTexture(backgroundTexture);
+    background.loadFromFile("images/background.png");
+    tiles.loadFromFile("images/tiles.png");
 
-    tileTexture.loadFromFile("images/tiles.png");
-    tileSprite.setTexture(tileTexture);
-    tileSprite.setTextureRect(sf::IntRect(0, 0, SHAPE_SIZE, SHAPE_SIZE));
+    top = sf::Sprite(background, sf::IntRect(0, 0, 320, 95));
+    bottom = sf::Sprite(background, sf::IntRect(0, 95, 320, 385));
+    bottom.setPosition(0, 95);
+    tile.setTexture(tiles);
 
-    music = new sf::Music(); // background music
-    music->openFromFile("audio/solveThePuzzle.ogg");
-    music->setLoop(true);
-    music->setVolume(25); // lower volume to 25%
-    music->play();
+    music.openFromFile("audio/solveThePuzzle.ogg");
+    music.setLoop(true);
+    music.setVolume(25); // lower volume to 25%
+    music.play();
 
-    buffer = new sf::SoundBuffer();
-    buffer->loadFromFile("audio/blip.wav"); // sound effect for when a row gets completed
-    sound = new sf::Sound(*buffer);
+    buffer.loadFromFile("audio/blip.wav"); // sound effect for when a row gets completed
+    sound.setBuffer(buffer);
 
-    std::memset(field, -1, sizeof(field)); // initialize the field to be empty (no colored blocks)
+    std::memset(field, -1, sizeof(field)); // initialize the field to be empty (no colored tiles)
 
-    currentShape = rand() % NUM_SHAPES; // pick an initial shape
-    tileColor = currentShape; // a given shape always gets the same color
-    // tileColor = rand() % NUM_TILE_COLORS; // shapes get random colors
+    addShape();
+}
 
-    for (int i = 0; i < NUM_BLOCKS; i++) { // initialize the current shape's position from the shapes table
+void Game::addShape() {
+    currentShape = rand() % NUM_SHAPES; // pick a shape
+    shapeColor = currentShape; // a given shape always gets the same color
+    // shapeColor = rand() % NUM_TILE_COLORS; // shapes get random colors
+
+    for (int i = 0; i < NUM_TILES; i++) { // initialize the current shape's position from the shapes table
         currentPosition[i].x = shapes[currentShape][i] % 2;
-        currentPosition[i].y = shapes[currentShape][i] / 2;
+        currentPosition[i].y = (shapes[currentShape][i] / 2) - 4; // start above the field
     }
 }
 
@@ -52,37 +55,36 @@ void Game::handleEvents() {
     while (window.pollEvent(event)) {
         if (event.type == sf::Event::Closed) window.close();
         if (event.type == sf::Event::KeyPressed) {
-            if (event.key.code == sf::Keyboard::Up)
-                rotate = true;
-            else if (event.key.code == sf::Keyboard::Left)
-                moveX = -1;
-            else if (event.key.code == sf::Keyboard::Right)
-                moveX = 1;
-            else if (event.key.code == sf::Keyboard::Escape)
-                window.close();
+            switch (event.key.code) {
+                case sf::Keyboard::Left:   moveX = -1; break;
+                case sf::Keyboard::Right:  moveX = 1; break;
+                case sf::Keyboard::Up:     rotate = true; break;
+                case sf::Keyboard::Escape: window.close(); break;
+            }
         }
     }
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) delay = 0.05f; // make shape move quickly
 }
 
 bool Game::collision() {
-    for (int i = 0; i < NUM_BLOCKS; i++) {
-        if (currentPosition[i].x < 0 || currentPosition[i].x >= FIELD_WIDTH || currentPosition[i].y >= FIELD_HEIGHT)
+    for (int i = 0; i < NUM_TILES; i++) {
+        if (currentPosition[i].x < 0 || currentPosition[i].x >= FIELD_WIDTH ||
+            currentPosition[i].y >= FIELD_HEIGHT)
             return true;
-        if (field[currentPosition[i].y][currentPosition[i].x] != -1)
+        if (currentPosition[i].y >= 0 && field[currentPosition[i].y][currentPosition[i].x] != -1)
             return true;
     }
     return false;
 }
 
 void Game::undo() {
-    for (int i = 0; i < NUM_BLOCKS; i++)
+    for (int i = 0; i < NUM_TILES; i++)
         currentPosition[i] = previousPosition[i];
 }
 
 void Game::move() {
     // make copy of the current shape and then move left or right 
-    for (int i = 0; i < NUM_BLOCKS; i++) {
+    for (int i = 0; i < NUM_TILES; i++) {
         previousPosition[i] = currentPosition[i];
         currentPosition[i].x += moveX; // no change if moveX is zero
     }
@@ -90,7 +92,7 @@ void Game::move() {
 
     if (rotate) {
         Point p = currentPosition[1]; // center of rotation
-        for (int i = 0; i < NUM_BLOCKS; i++) {
+        for (int i = 0; i < NUM_TILES; i++) {
             int x = currentPosition[i].y - p.y;
             int y = currentPosition[i].x - p.x;
             currentPosition[i].x = p.x - x;
@@ -104,61 +106,54 @@ void Game::update() {
     timer += clock.restart().asSeconds();
     if (timer > delay) {
         timer = 0;
-        for (int i = 0; i < NUM_BLOCKS; i++) {
-            previousPosition[i] = currentPosition[i];
-            currentPosition[i].y++;
+        for (int i = 0; i < NUM_TILES; i++) {
+            previousPosition[i] = currentPosition[i]; // save where we were
+            currentPosition[i].y++; // try moving down one row
         }
-        if (collision()) {
-            for (int i = 0; i < NUM_BLOCKS; i++) {
-                field[previousPosition[i].y][previousPosition[i].x] = tileColor;
+        if (collision()) { // after moving down one row, check to see if we hit anything
+            for (int i = 0; i < NUM_TILES; i++) { // stick the current shape onto the field
+                field[previousPosition[i].y][previousPosition[i].x] = shapeColor;
             }
-            currentShape = rand() % NUM_SHAPES;
-            tileColor = currentShape;
-            // tileColor = rand() % NUM_TILE_COLORS;
-            for (int i = 0; i < NUM_BLOCKS; i++) {
-                currentPosition[i].x = shapes[currentShape][i] % 2;
-                currentPosition[i].y = shapes[currentShape][i] / 2;
-            }
+            addShape(); // create a new shape and start over again at the top of the field
         }
     }
 }
 
-void Game::clearCompleted() {
-    // check for completed lines
+void Game::clearCompleted() { // check for completed lines
     int k = FIELD_HEIGHT - 1;
     for (int i = FIELD_HEIGHT - 1; i > 0; i--) {
-        int count = 0;
+        bool completed = true;
         for (int j = 0; j < FIELD_WIDTH; j++) {
-            if (field[i][j] != -1) count++;
-            // if k equals i, then the blocks will stay as they are
+            if (field[i][j] == -1) completed = false; // any unfilled tile means the row is not complete
+            // if k equals i, then the tiles will stay as they are
             // but after a row completes, i will be "above" k and so completed rows will get overwritten
             field[k][j] = field[i][j];
         }
-        if (count < FIELD_WIDTH) {
-            k--; // when row is not completed, decrement k to keep it in sync with i
+        if (completed) {
+            // when row is completed, k does not decrement, so that tiles from the row above will overwrite the completed row
+            sound.play(); // play a sound effect
         } else {
-            // when row is completed, k does not decrement, so that blocks from the row above will overwrite the completed row
-            sound->play(); // play a sound effect
+            k--; // when row is not completed, decrement k to keep it in sync with i
         }
     }
 }
 
 void Game::draw() {
     window.clear(sf::Color::White);
-    window.draw(backgroundSprite);
+    window.draw(bottom); // tiles are drawn "above" this background
     for (int i = 0; i < FIELD_HEIGHT; i++) {
         for (int j = 0; j < FIELD_WIDTH; j++) {
             if (field[i][j] == -1) continue;
-            tileSprite.setTextureRect(sf::IntRect(field[i][j] * SHAPE_SIZE, 0, SHAPE_SIZE, SHAPE_SIZE));
-            tileSprite.setPosition(j * SHAPE_SIZE + FIELD_HORZ_OFFSET, i * SHAPE_SIZE + FIELD_VERT_OFFSET);
-            window.draw(tileSprite);
-
+            tile.setTextureRect(sf::IntRect(field[i][j] * TILE_SIZE, 0, TILE_SIZE, TILE_SIZE));
+            tile.setPosition(j * TILE_SIZE + FIELD_HORZ_OFFSET, i * TILE_SIZE + FIELD_VERT_OFFSET);
+            window.draw(tile);
         }
     }
-    for (int i = 0; i < NUM_BLOCKS; i++) {
-        tileSprite.setTextureRect(sf::IntRect(tileColor * SHAPE_SIZE, 0, SHAPE_SIZE, SHAPE_SIZE));
-        tileSprite.setPosition(currentPosition[i].x * SHAPE_SIZE + FIELD_HORZ_OFFSET, currentPosition[i].y * SHAPE_SIZE + FIELD_VERT_OFFSET);
-        window.draw(tileSprite);
+    for (int i = 0; i < NUM_TILES; i++) {
+        tile.setTextureRect(sf::IntRect(shapeColor * TILE_SIZE, 0, TILE_SIZE, TILE_SIZE));
+        tile.setPosition(currentPosition[i].x * TILE_SIZE + FIELD_HORZ_OFFSET, currentPosition[i].y * TILE_SIZE + FIELD_VERT_OFFSET);
+        window.draw(tile);
     }
+    window.draw(top); // this background is drawn "above" the tiles (hiding them from view)
     window.display();
 }

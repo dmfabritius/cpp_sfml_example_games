@@ -3,7 +3,7 @@
 class Asteroid : public Entity {
 public:
     Asteroid(AnimatedSprite& anim, float x, float y) :
-        Entity("asteroid", anim, x, y, randf(360)) {
+        Entity(ASTEROID, anim, x, y, randf(360)) {
         dx = 1 + randf(2); // move at a random speed
         dy = 1 + randf(2);
         if (std::rand() % 2) dx *= -1; // move to the left or right

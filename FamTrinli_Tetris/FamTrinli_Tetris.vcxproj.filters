@@ -73,7 +73,7 @@
     <Image Include="images\tiles.png">
       <Filter>Resource Files</Filter>
     </Image>
-    <Image Include="images\bkg.png">
+    <Image Include="images\background.png">
       <Filter>Resource Files</Filter>
     </Image>
   </ItemGroup>

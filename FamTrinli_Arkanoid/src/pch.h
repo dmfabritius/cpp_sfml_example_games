@@ -22,11 +22,6 @@ constexpr float DEG2RAD = TWO_PI / 360.0f;
 #include <SFML/Window.hpp>
 #include <SFML/Graphics.hpp>
 #include <SFML/Audio.hpp>
-#include <SFML/Network.hpp>
+//#include <SFML/Network.hpp>
 // TGUI v0.8.4
-#include <TGUI/TGUI.hpp>
-
-// a little global helper function to return a random number as a float
-float randf(int n) {
-    return static_cast<float>(rand() % n); // number between 0 and n-1
-}
+//#include <TGUI/TGUI.hpp>

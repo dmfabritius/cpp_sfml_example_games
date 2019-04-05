@@ -1,4 +1,7 @@
 #pragma once
+constexpr int DISPLAY_WIDTH = 1200;
+constexpr int DISPLAY_HEIGHT = 800;
+
 #include "AnimatedSprite.h"
 #include "Entity.h"
 #include "Ship.h"
@@ -7,23 +10,22 @@
 #include "Explosion.h"
 
 class Game {
-private:
+public:
     sf::RenderWindow window;
     sf::Sprite background;
-    sf::Music* music;
-    std::unordered_map <std::string, sf::Sound*> sounds;
+    sf::Music music;
+    std::unordered_map<std::string, sf::Sound> sounds;
     std::unordered_map<std::string, sf::Texture> textures;
     std::unordered_map<std::string, AnimatedSprite> sprites;
     std::list<Entity*> entities; // all the game objects to be updated and drawn during each game cycle
     Ship* ship; // the ship is just one of the entities, but it's handy to have a direct reference to it
 
-public:
     Game() {
         window.create(sf::VideoMode(DISPLAY_WIDTH, DISPLAY_HEIGHT), "Ast*roids! SFML v2.5.1 TGUI v0.8");
         window.setFramerateLimit(60);
 
         loadBackgroundMusic();
-        loadSoundEffects();
+        loadSounds();
         loadTextures();
         createSprites();
 
@@ -34,8 +36,7 @@ public:
     }
     ~Game() {
         for (Entity* e : entities) delete e; // deallocate any remaining entities
-        for (auto s : sounds) delete s.second; // deallocate all sounds and their buffers
-        delete music; // deallocate background music
+        for (auto s : sounds) delete s.second.getBuffer(); // deallocate all sound buffers
     }
     void run() {
         while (window.isOpen()) {
@@ -45,25 +46,23 @@ public:
         }
     }
 
-private:
     void loadBackgroundMusic() {
-        music = new sf::Music();
-        music->openFromFile("audio/solveThePuzzle.ogg");
-        music->setLoop(true);
-        music->setVolume(25); // lower volume to 25%
-        music->play();
+        music.openFromFile("audio/solveThePuzzle.ogg");
+        music.setLoop(true);
+        music.setVolume(25); // lower volume to 25%
+        music.play();
     }
-    void loadSoundEffects() {
-        sounds["bang_lg"] = loadSound("audio/bang_lg.wav");
-        sounds["bang_md"] = loadSound("audio/bang_md.wav");
-        sounds["bang_sm"] = loadSound("audio/bang_sm.wav");
-        sounds["laser"] = loadSound("audio/laser.wav");
-        sounds["thrust"] = loadSound("audio/thrust.wav");
+    void loadSounds() {
+        sounds["bang_lg"].setBuffer(loadSoundFile("audio/bang_lg.wav"));
+        sounds["bang_md"].setBuffer(loadSoundFile("audio/bang_md.wav"));
+        sounds["bang_sm"].setBuffer(loadSoundFile("audio/bang_sm.wav"));
+        sounds["laser"].setBuffer(loadSoundFile("audio/laser.wav"));
+        sounds["thrust"].setBuffer(loadSoundFile("audio/thrust.wav"));
     }
-    sf::Sound* loadSound(std::string filename) {
+    sf::SoundBuffer& loadSoundFile(std::string filename) {
         sf::SoundBuffer* buffer = new sf::SoundBuffer();
-        buffer->loadFromFile(filename); // loading sound files is slow, so just do it once as the game starts
-        return new sf::Sound(*buffer);
+        buffer->loadFromFile(filename);
+        return *buffer;
     }
     void loadTextures() {
         textures["asteroid"].loadFromFile("images/asteroid.png");
@@ -90,12 +89,12 @@ private:
             if (event.type == sf::Event::KeyReleased) // make the player let go of the space bar before firing
                 if (event.key.code == sf::Keyboard::Space) {
                     addEntity("laser");
-                    sounds["laser"]->play();
+                    sounds["laser"].play();
                 }
         }
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape)) window.close();
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left))  ship->angle -= 3; // rotate clockwise by 3 degrees
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) ship->angle += 3;
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left))  ship->angle -= 3;
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Z)) addEntity("laser"); // lots 'o lasers!!!!
 
         ship->thrusting = sf::Keyboard::isKeyPressed(sf::Keyboard::Up);
@@ -103,18 +102,18 @@ private:
     void updateEntities() {
         // set the ship's animation depending on whether or not it's thrusting
         ship->anim = (ship->thrusting) ? sprites["ship_thrusting"] : sprites["ship"];
-        if (ship->thrusting && sounds["thrust"]->getStatus() != sf::Sound::Playing)
-            sounds["thrust"]->play(); // play when thrusting, but not if it's already playing
+        if (ship->thrusting && sounds["thrust"].getStatus() != sf::Sound::Playing)
+            sounds["thrust"].play(); // play when thrusting, but not if it's already playing
 
         if (rand() % 400 == 0) addEntity("asteroid_lg"); // throw in another asteroid occasionally
 
-        for (auto i = entities.begin(); i != entities.end();) {
+        auto i = entities.begin();
+        while (i != entities.end()) {
             Entity* e = *i;
             e->anim.nextFrame(); // advance the entity's animation
             e->update(); // update the heading, velocity, and/or position of the entity
 
-            if (e->type == "asteroid") checkCollisions(e); // we only care when asteroids hit things
-            if (e->type == "explosion") e->active = !e->anim.completed(); // explosions get removed when their animation completes
+            if (e->type == Entity::ASTEROID) checkCollisions(e); // we only care when asteroids hit things
 
             if (!e->active) {
                 i = entities.erase(i); // remove entity and advance to the next one
@@ -130,19 +129,18 @@ private:
         window.display();
     }
     void addEntity(const std::string& type, float x = 0, float y = 0) {
+        // this is just a helper function to make other places in the code look cleaner
         Entity* e;
         if (type == "laser")
             e = new Laser(sprites[type], ship->x, ship->y, ship->angle);
         else if (type == "explosion_ship")
-            e = new Explosion(sprites["explosion_ship"], ship->x, ship->y);
+            e = new Explosion(sprites[type], ship->x, ship->y);
         else if (type == "explosion_asteroid")
-            e = new Explosion(sprites["explosion_asteroid"], x, y);
+            e = new Explosion(sprites[type], x, y);
         else if (type == "asteroid_lg")
-            e = new Asteroid(sprites["asteroid_lg"], 0, randf(DISPLAY_HEIGHT));
-        else if (type == "asteroid_md")
-            e = new Asteroid(sprites["asteroid_md"], x, y);
-        else if (type == "asteroid_sm")
-            e = new Asteroid(sprites["asteroid_sm"], x, y);
+            e = new Asteroid(sprites[type], 0, randf(DISPLAY_HEIGHT));
+        else if (type == "asteroid_md" || type == "asteroid_sm")
+            e = new Asteroid(sprites[type], x, y);
 
         if (type == "laser")
             entities.push_front(e); // we want the lasers to get drawn first, so the ship is on top of them
@@ -151,27 +149,27 @@ private:
     }
     void checkCollisions(Entity* asteroid) {
         for (Entity* e : entities) {
-            if (e->type == "laser" && collision(asteroid, e)) {
+            if (e->type == Entity::LASER && collision(asteroid, e)) {
                 asteroid->active = false; // the asteroid gets destroyed
                 e->active = false; // the laser also gets destroyed
                 addEntity("explosion_asteroid", asteroid->x, asteroid->y);
                 if (asteroid->anim.r > 30) {
-                    sounds["bang_lg"]->play();
+                    sounds["bang_lg"].play();
                     addEntity("asteroid_md", asteroid->x, asteroid->y);
                     addEntity("asteroid_md", asteroid->x, asteroid->y);
                 } else if (asteroid->anim.r > 20) {
-                    sounds["bang_md"]->play();
+                    sounds["bang_md"].play();
                     addEntity("asteroid_sm", asteroid->x, asteroid->y);
                     addEntity("asteroid_sm", asteroid->x, asteroid->y);
                 } else {
-                    sounds["bang_sm"]->play();
+                    sounds["bang_sm"].play();
                 }
-            } else if (e->type == "ship" && collision(asteroid, e)) {
+            } else if (e->type == Entity::SHIP && collision(asteroid, e)) {
                 asteroid->active = false;
                 addEntity("explosion_ship");
-                sounds["bang_lg"]->play();
-                ship->x = DISPLAY_WIDTH / 2;
-                ship->y = DISPLAY_HEIGHT / 2;
+                sounds["bang_lg"].play();
+                ship->x = DISPLAY_WIDTH * 0.5f; // reset the ship to the center of the screen
+                ship->y = DISPLAY_HEIGHT * 0.5f;
                 ship->dx = ship->dy = 0;
             }
         }

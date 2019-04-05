@@ -95,11 +95,14 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="src\Game.cpp" />
     <ClCompile Include="src\main.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\Ball.h" />
+    <ClInclude Include="src\Block.h" />
+    <ClInclude Include="src\Entity.h" />
     <ClInclude Include="src\Game.h" />
+    <ClInclude Include="src\Paddle.h" />
     <ClInclude Include="src\pch.h" />
   </ItemGroup>
   <ItemGroup>
@@ -107,7 +110,16 @@
     <None Include="audio\soundtrack.ogg" />
   </ItemGroup>
   <ItemGroup>
+    <Image Include="images\background.jpg" />
     <Image Include="images\background.png" />
+    <Image Include="images\ball.png" />
+    <Image Include="images\block01.png" />
+    <Image Include="images\block02.png" />
+    <Image Include="images\block03.png" />
+    <Image Include="images\block04.png" />
+    <Image Include="images\block05.png" />
+    <Image Include="images\blocks.png" />
+    <Image Include="images\paddle.png" />
     <Image Include="images\tiles.png" />
     <Image Include="theme\black.png" />
   </ItemGroup>
